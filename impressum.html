@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Impressum – Leuchtkäfer</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<style>
+  @font-face{
+    font-family:'Baloo 2';
+    font-style:normal;
+    font-weight:500;
+    font-display:swap;
+    src:url('fonts/baloo2-500.woff2') format('woff2');
+  }
+  @font-face{
+    font-family:'Baloo 2';
+    font-style:normal;
+    font-weight:700;
+    font-display:swap;
+    src:url('fonts/baloo2-700.woff2') format('woff2');
+  }
+  @font-face{
+    font-family:'Baloo 2';
+    font-style:normal;
+    font-weight:800;
+    font-display:swap;
+    src:url('fonts/baloo2-800.woff2') format('woff2');
+  }
+
+  :root{
+    --bg-deep: #16213E;
+    --bg-deep-2: #0F1730;
+    --cell: #2B3A63;
+    --cell-edge: #3A4C7D;
+    --glow-soft: #A9F5C4;
+    --spark: #FFD166;
+    --cream: #F4F1EA;
+    --panel: #1F2C50;
+    --muted: #B9C3E0;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0;
+    min-height:100%;
+    font-family:'Baloo 2', system-ui, sans-serif;
+    background: radial-gradient(ellipse at 50% -10%, var(--bg-deep) 0%, var(--bg-deep-2) 70%);
+    color: var(--cream);
+  }
+
+  .wrap{
+    max-width: 700px;
+    margin: 0 auto;
+    padding: clamp(20px, 5vh, 56px) 20px 60px;
+  }
+
+  a{ color: var(--glow-soft); }
+
+  .back-link{
+    display:inline-block;
+    margin-bottom: 24px;
+    color: var(--muted);
+    text-decoration:none;
+    font-weight:700;
+    font-size:14px;
+  }
+  .back-link:hover{ color: var(--glow-soft); }
+
+  h1{
+    font-size: clamp(26px, 5vw, 36px);
+    font-weight:800;
+    margin: 0 0 24px;
+  }
+
+  section{
+    background: linear-gradient(160deg, var(--cell), #24315A);
+    border: 2px solid var(--cell-edge);
+    border-radius: 18px;
+    padding: 20px 24px;
+    margin-bottom: 18px;
+  }
+
+  h2{
+    font-size: 18px;
+    font-weight:800;
+    margin: 0 0 10px;
+    color: var(--spark);
+  }
+
+  p{
+    margin: 0 0 8px;
+    line-height:1.6;
+    font-size:15px;
+  }
+
+  .placeholder{
+    color: #FFB3B3;
+    font-weight:700;
+  }
+
+  .hint{
+    font-size:13px;
+    color: var(--muted);
+    line-height:1.6;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <a class="back-link" href="index.html">← Zurück zur Spieleübersicht</a>
+  <h1>Impressum</h1>
+
+  <section>
+    <h2>Angaben gemäß § 5 DDG</h2>
+    <p class="placeholder">[Vollständiger Vor- und Nachname]</p>
+    <p class="placeholder">[Straße und Hausnummer]</p>
+    <p class="placeholder">[Postleitzahl und Ort]</p>
+    <p class="placeholder">[Land]</p>
+  </section>
+
+  <section>
+    <h2>Kontakt</h2>
+    <p>E-Mail: <span class="placeholder">[deine@email.de]</span></p>
+  </section>
+
+  <section>
+    <h2>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h2>
+    <p class="placeholder">[Vollständiger Vor- und Nachname, Anschrift wie oben]</p>
+  </section>
+
+  <section>
+    <h2>Haftungshinweis</h2>
+    <p>Trotz sorgfältiger inhaltlicher Kontrolle übernehme ich keine Haftung für die Inhalte externer Links. Für den Inhalt der verlinkten Seiten sind ausschließlich deren Betreiber verantwortlich.</p>
+  </section>
+
+  <p class="hint">
+    Hinweis: Diese Seite ist eine Vorlage mit Platzhaltern. Trage vor der Veröffentlichung deinen echten,
+    ladungsfähigen Namen und deine Anschrift ein (ein Postfach reicht laut Rechtsprechung nicht aus) –
+    ohne diese Angaben erfüllt die Seite die Impressumspflicht nicht.
+  </p>
+</div>
+
+</body>
+</html>
