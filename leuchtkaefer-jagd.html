@@ -524,7 +524,9 @@
     if(!caught){
       if(curvyEnabled){
         // sanfte, zufällige Richtungsänderung (kein hartes Zick-Zack)
-        angularVelocity += (Math.random() - 0.5) * CURVE_JERK * dt;
+        // Wichtig: Zufalls-Zuwachs mit sqrt(dt) skalieren (nicht mit dt),
+        // sonst wird die Kurve bei hoher Framerate praktisch unsichtbar.
+        angularVelocity += (Math.random() - 0.5) * CURVE_JERK * Math.sqrt(dt);
         angularVelocity = Math.max(-CURVE_MAX_TURN, Math.min(CURVE_MAX_TURN, angularVelocity));
         angularVelocity *= Math.exp(-CURVE_DAMPING * dt);
         angle += angularVelocity * dt;
