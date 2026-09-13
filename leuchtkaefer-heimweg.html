@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Leuchtkäfer-Heimweg 🐝🏡</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<style>
+  /* Baloo 2, lokal eingebunden (kein Request an Google-Server, siehe /fonts) */
+  @font-face{
+    font-family:'Baloo 2';
+    font-style:normal;
+    font-weight:500;
+    font-display:swap;
+    src:url('fonts/baloo2-500.woff2') format('woff2');
+  }
+  @font-face{
+    font-family:'Baloo 2';
+    font-style:normal;
+    font-weight:700;
+    font-display:swap;
+    src:url('fonts/baloo2-700.woff2') format('woff2');
+  }
+  @font-face{
+    font-family:'Baloo 2';
+    font-style:normal;
+    font-weight:800;
+    font-display:swap;
+    src:url('fonts/baloo2-800.woff2') format('woff2');
+  }
+
+  :root{
+    --bg-top:#0a0f2b;
+    --bg-bottom:#1b2a5c;
+    --panel-bg:rgba(24,32,66,0.88);
+    --panel-border:rgba(255,255,255,0.14);
+    --firefly-green:#7CFF6B;
+    --firefly-green-dark:#3fbf3a;
+    --home-gold:#FFD166;
+    --home-gold-dark:#d9a441;
+    --text-light:#f4f6ff;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  html,body{
+    margin:0; padding:0;
+    width:100%; height:100%;
+    overflow:hidden;
+    background:linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+    font-family:'Baloo 2', sans-serif;
+    touch-action:none;
+    user-select:none;
+  }
+
+  #stage{
+    position:relative;
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
+  }
+
+  /* --- Sternenhimmel-Hintergrund --- */
+  .bg-star{
+    position:absolute;
+    border-radius:50%;
+    background:#ffffff;
+    opacity:0.55;
+    animation:twinkle 3s ease-in-out infinite;
+  }
+  @keyframes twinkle{
+    0%,100%{ opacity:0.25; }
+    50%{ opacity:0.9; }
+  }
+
+  .moon{
+    position:absolute;
+    top:4%;
+    right:8%;
+    width:70px;
+    height:70px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #fffbe0, #ffe9a3 60%, #f5d67a 100%);
+    box-shadow:0 0 40px 10px rgba(255,235,170,0.35);
+  }
+
+  /* --- Top-Leiste: Zähler --- */
+  #counter-box{
+    position:absolute;
+    top:18px;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--panel-bg);
+    border:2px solid var(--panel-border);
+    border-radius:30px;
+    padding:10px 26px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.35);
+    z-index:20;
+  }
+  #counter-box .home-icon{
+    font-size:1.6rem;
+    filter:drop-shadow(0 0 6px var(--home-gold));
+  }
+  #counter-box .count{
+    font-size:1.6rem;
+    font-weight:800;
+    color:var(--text-light);
+    min-width:1.4em;
+    text-align:left;
+  }
+  #counter-box.bump{
+    animation:bump 0.35s ease;
+  }
+  @keyframes bump{
+    0%{ transform:translateX(-50%) scale(1); }
+    40%{ transform:translateX(-50%) scale(1.18); }
+    100%{ transform:translateX(-50%) scale(1); }
+  }
+
+  /* --- Wegweiser-Linie (Käfer -> Baum) --- */
+  #guide-svg{
+    position:absolute;
+    top:0; left:0;
+    width:100%; height:100%;
+    pointer-events:none;
+    z-index:5;
+  }
+  #guide-line{
+    stroke:rgba(255,209,102,0.55);
+    stroke-width:4;
+    stroke-linecap:round;
+    stroke-dasharray:2 16;
+    animation:dash-flow 0.9s linear infinite;
+    transition:opacity 0.2s ease;
+  }
+  @keyframes dash-flow{
+    to{ stroke-dashoffset:-36; }
+  }
+
+  /* --- Der leuchtende Heimatbaum --- */
+  #home-wrap{
+    position:absolute;
+    top:0; left:0;
+    width:120px;
+    height:120px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:8;
+    will-change:transform;
+  }
+  #home-glow{
+    position:relative;
+    width:88px;
+    height:88px;
+    border-radius:50%;
+    background:radial-gradient(circle at 42% 38%, #fff6d8, var(--home-gold) 45%, var(--home-gold-dark) 100%);
+    box-shadow:
+      0 0 22px 8px rgba(255,209,102,0.55),
+      0 0 46px 20px rgba(255,209,102,0.25);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:2.6rem;
+    line-height:1;
+    animation:home-pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes home-pulse{
+    0%,100%{ transform:scale(1); box-shadow:0 0 22px 8px rgba(255,209,102,0.55), 0 0 46px 20px rgba(255,209,102,0.25); }
+    50%{ transform:scale(1.06); box-shadow:0 0 30px 12px rgba(255,209,102,0.7), 0 0 60px 28px rgba(255,209,102,0.32); }
+  }
+
+  #home-wrap.welcoming #home-glow{
+    animation:home-welcome 0.4s ease;
+  }
+  @keyframes home-welcome{
+    0%{ transform:scale(1); }
+    45%{ transform:scale(1.28); }
+    100%{ transform:scale(1); }
+  }
+
+  /* --- Der Leuchtkäfer (ziehbar) --- */
+  #firefly-wrap{
+    position:absolute;
+    top:0; left:0;
+    width:96px;
+    height:96px;
+    /* großzügige Greif-Fläche, größer als der sichtbare Punkt */
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:grab;
+    touch-action:none;
+    will-change:transform;
+    z-index:10;
+  }
+
+  #firefly-glow{
+    position:relative;
+    width:56px;
+    height:56px;
+    border-radius:50%;
+    background:radial-gradient(circle at 40% 35%, #d9ffd0, var(--firefly-green) 45%, var(--firefly-green-dark) 100%);
+    box-shadow:
+      0 0 18px 6px rgba(124,255,107,0.75),
+      0 0 40px 18px rgba(124,255,107,0.35);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.9rem;
+    line-height:1;
+    animation:pulse 1.6s ease-in-out infinite;
+    transition:transform 0.15s ease;
+  }
+  @keyframes pulse{
+    0%,100%{ transform:scale(1); box-shadow:0 0 18px 6px rgba(124,255,107,0.75), 0 0 40px 18px rgba(124,255,107,0.35); }
+    50%{ transform:scale(1.12); box-shadow:0 0 26px 10px rgba(124,255,107,0.9), 0 0 55px 26px rgba(124,255,107,0.45); }
+  }
+
+  #firefly-wrap.dragging{
+    cursor:grabbing;
+  }
+  #firefly-wrap.dragging #firefly-glow{
+    animation:none;
+    transform:scale(1.18);
+  }
+
+  #firefly-wrap.arrived #firefly-glow{
+    animation:none;
+    transform:scale(0);
+    transition:transform 0.3s ease-in;
+  }
+
+  #firefly-wrap.miss #firefly-glow{
+    animation:miss-wobble 0.4s ease;
+  }
+  @keyframes miss-wobble{
+    0%,100%{ transform:scale(1) rotate(0deg); }
+    30%{ transform:scale(1.05) rotate(-8deg); }
+    60%{ transform:scale(1.05) rotate(8deg); }
+  }
+
+  /* --- Erfolgs-Funken --- */
+  .spark-layer{
+    position:absolute;
+    top:0; left:0;
+    width:100%; height:100%;
+    pointer-events:none;
+    z-index:15;
+  }
+  .spark{
+    position:absolute;
+    font-size:1.4rem;
+    opacity:1;
+    transform:translate(-50%,-50%) scale(0.6);
+    animation:spark-fly 0.7s ease-out forwards;
+  }
+  @keyframes spark-fly{
+    0%{ opacity:1; transform:translate(-50%,-50%) scale(0.5) translate(0,0); }
+    100%{ opacity:0; transform:translate(-50%,-50%) scale(1.3) var(--spark-move); }
+  }
+
+  /* --- Zahnrad / Einstellungen --- */
+  #gear-btn{
+    position:absolute;
+    bottom:20px;
+    right:20px;
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    background:var(--panel-bg);
+    border:2px solid var(--panel-border);
+    box-shadow:0 8px 18px rgba(0,0,0,0.35);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.7rem;
+    cursor:pointer;
+    z-index:30;
+    transition:transform 0.2s ease;
+  }
+  #gear-btn:active{ transform:scale(0.9) rotate(25deg); }
+
+  #settings-panel{
+    position:absolute;
+    bottom:92px;
+    right:20px;
+    background:var(--panel-bg);
+    border:2px solid var(--panel-border);
+    border-radius:26px;
+    padding:18px 22px;
+    box-shadow:0 10px 26px rgba(0,0,0,0.4);
+    z-index:30;
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+    min-width:220px;
+  }
+  #settings-panel.open{ display:flex; }
+
+  #settings-panel .panel-title{
+    color:var(--text-light);
+    font-size:1.15rem;
+    font-weight:700;
+    text-align:center;
+  }
+
+  .size-label{
+    min-width:96px;
+    text-align:center;
+    color:var(--home-gold);
+    font-size:1.3rem;
+    font-weight:800;
+  }
+
+  .slider-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    width:100%;
+  }
+  .slider-row .end-icon{
+    font-size:1.4rem;
+    flex:0 0 auto;
+    filter:drop-shadow(0 0 4px rgba(0,0,0,0.4));
+  }
+
+  #size-slider{
+    -webkit-appearance:none;
+    appearance:none;
+    width:170px;
+    height:14px;
+    border-radius:10px;
+    background:linear-gradient(90deg,#3a4a92,#5a72d0);
+    outline:none;
+    cursor:pointer;
+  }
+  #size-slider::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    appearance:none;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background:radial-gradient(circle at 40% 35%, #fff6d8, var(--home-gold) 45%, var(--home-gold-dark) 100%);
+    box-shadow:0 0 10px 3px rgba(255,209,102,0.8), 0 2px 6px rgba(0,0,0,0.4);
+    border:2px solid #fff;
+    cursor:pointer;
+  }
+  #size-slider::-moz-range-thumb{
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background:radial-gradient(circle at 40% 35%, #fff6d8, var(--home-gold) 45%, var(--home-gold-dark) 100%);
+    box-shadow:0 0 10px 3px rgba(255,209,102,0.8), 0 2px 6px rgba(0,0,0,0.4);
+    border:2px solid #fff;
+    cursor:pointer;
+  }
+  #size-slider::-moz-range-track{
+    height:14px;
+    border-radius:10px;
+    background:linear-gradient(90deg,#3a4a92,#5a72d0);
+  }
+
+  /* --- Toggle: Wegweiser anzeigen --- */
+  .toggle-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    width:100%;
+    margin-top:4px;
+  }
+  .toggle-row .toggle-text{
+    color:var(--text-light);
+    font-size:1.05rem;
+    font-weight:700;
+    text-align:left;
+  }
+  .toggle-switch{
+    position:relative;
+    flex:0 0 auto;
+    width:58px;
+    height:32px;
+  }
+  .toggle-switch input{
+    opacity:0;
+    width:0;
+    height:0;
+    position:absolute;
+  }
+  .toggle-track{
+    position:absolute;
+    inset:0;
+    background:#3a4270;
+    border:2px solid var(--panel-border);
+    border-radius:20px;
+    cursor:pointer;
+    transition:background 0.2s ease;
+  }
+  .toggle-track::before{
+    content:"";
+    position:absolute;
+    left:3px;
+    top:3px;
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    background:#dfe3ff;
+    box-shadow:0 2px 5px rgba(0,0,0,0.35);
+    transition:transform 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
+  }
+  #guide-toggle:checked + .toggle-track{
+    background:#8a6a1f;
+  }
+  #guide-toggle:checked + .toggle-track::before{
+    transform:translateX(26px);
+    background:radial-gradient(circle at 40% 35%, #fff6d8, var(--home-gold) 45%, var(--home-gold-dark) 100%);
+    box-shadow:0 0 8px 2px rgba(255,209,102,0.8);
+  }
+
+  #close-panel{
+    margin-top:4px;
+    background:none;
+    border:none;
+    color:var(--text-light);
+    opacity:0.75;
+    font-size:1rem;
+    font-family:'Baloo 2', sans-serif;
+    cursor:pointer;
+  }
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <div class="moon"></div>
+
+  <!-- Zähler: angekommene Heimwege -->
+  <div id="counter-box">
+    <span class="home-icon">🏡</span>
+    <span class="count" id="count">0</span>
+  </div>
+
+  <!-- Wegweiser-Linie vom Käfer zum Baum -->
+  <svg id="guide-svg"><line id="guide-line" x1="0" y1="0" x2="0" y2="0"></line></svg>
+
+  <!-- Funken-Layer für Erfolgsanimation -->
+  <div class="spark-layer" id="spark-layer"></div>
+
+  <!-- Der leuchtende Heimatbaum -->
+  <div id="home-wrap">
+    <div id="home-glow">🌳</div>
+  </div>
+
+  <!-- Der ziehbare Leuchtkäfer -->
+  <div id="firefly-wrap">
+    <div id="firefly-glow">🐝</div>
+  </div>
+
+  <!-- Zahnrad-Einstellungen -->
+  <button id="gear-btn" aria-label="Einstellungen">⚙️</button>
+  <div id="settings-panel">
+    <div class="panel-title">Wie groß ist<br>das Ziel am Baum?</div>
+    <span class="size-label" id="size-label">Mittel</span>
+    <div class="slider-row">
+      <span class="end-icon">🎯</span>
+      <input type="range" id="size-slider" min="40" max="140" step="1" value="85">
+      <span class="end-icon">🌳</span>
+    </div>
+    <div class="toggle-row">
+      <span class="toggle-text">Wegweiser anzeigen</span>
+      <span class="toggle-switch">
+        <input type="checkbox" id="guide-toggle" checked>
+        <label class="toggle-track" for="guide-toggle"></label>
+      </span>
+    </div>
+    <button id="close-panel">Schließen</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  const stage       = document.getElementById('stage');
+  const fireflyWrap = document.getElementById('firefly-wrap');
+  const homeWrap    = document.getElementById('home-wrap');
+  const counterBox  = document.getElementById('counter-box');
+  const countEl     = document.getElementById('count');
+  const sparkLayer  = document.getElementById('spark-layer');
+  const guideLine   = document.getElementById('guide-line');
+
+  const gearBtn      = document.getElementById('gear-btn');
+  const settingsPanel= document.getElementById('settings-panel');
+  const closePanelBtn= document.getElementById('close-panel');
+  const sizeLabel    = document.getElementById('size-label');
+  const sizeSlider   = document.getElementById('size-slider');
+  const guideToggle  = document.getElementById('guide-toggle');
+
+  // --- Hintergrund-Sterne erzeugen ---
+  function createBackgroundStars(count){
+    for(let i=0;i<count;i++){
+      const s = document.createElement('div');
+      s.className = 'bg-star';
+      const size = 1 + Math.random()*2.5;
+      s.style.width  = size+'px';
+      s.style.height = size+'px';
+      s.style.left = (Math.random()*100)+'vw';
+      s.style.top  = (Math.random()*90)+'vh';
+      s.style.animationDelay = (Math.random()*3)+'s';
+      stage.insertBefore(s, stage.firstChild.nextSibling);
+    }
+  }
+  createBackgroundStars(45);
+
+  // --- Zielgröße (Ankunfts-Toleranz in Pixel), stufenlos per Schieberegler ---
+  let catchDistance = parseFloat(sizeSlider.value); // px zwischen Käfer- und Baum-Mitte
+
+  function sizeLabelFor(v){
+    if(v <= 55)  return 'Klein';
+    if(v <= 100) return 'Mittel';
+    return 'Groß';
+  }
+
+  function updateSizeUI(){
+    sizeLabel.textContent = sizeLabelFor(catchDistance);
+  }
+
+  sizeSlider.addEventListener('input', () => {
+    catchDistance = parseFloat(sizeSlider.value);
+    updateSizeUI();
+  });
+
+  // --- Wegweiser ein/aus (Standard: an) ---
+  let guideEnabled = true;
+  guideToggle.checked = true;
+  guideToggle.addEventListener('change', () => {
+    guideEnabled = guideToggle.checked;
+    updateGuideLine();
+  });
+
+  gearBtn.addEventListener('click', () => {
+    settingsPanel.classList.toggle('open');
+  });
+  closePanelBtn.addEventListener('click', () => {
+    settingsPanel.classList.remove('open');
+  });
+
+  updateSizeUI();
+
+  // --- Positionen von Käfer und Baum ---
+  const FIREFLY_SIZE = 96; // muss zu #firefly-wrap width/height passen
+  const HOME_SIZE     = 120; // muss zu #home-wrap width/height passen
+
+  let stageW = window.innerWidth;
+  let stageH = window.innerHeight;
+
+  let fx=0, fy=0; // Käfer, oben-links
+  let hx=0, hy=0; // Baum, oben-links
+  let dragging = false;
+  let dragPointerId = null;
+  let arrived = false; // während Ankunfts-Animation pausiert die Interaktion kurz
+
+  function randomPos(size, margin){
+    const w = Math.max(1, stageW - 2*margin - size);
+    const h = Math.max(1, stageH - 2*margin - size);
+    return {
+      x: margin + Math.random()*w,
+      y: margin + Math.random()*h
+    };
+  }
+
+  function distanceBetweenCenters(){
+    const fcx = fx + FIREFLY_SIZE/2, fcy = fy + FIREFLY_SIZE/2;
+    const hcx = hx + HOME_SIZE/2,     hcy = hy + HOME_SIZE/2;
+    return Math.hypot(fcx-hcx, fcy-hcy);
+  }
+
+  function placeNewRound(){
+    stageW = window.innerWidth;
+    stageH = window.innerHeight;
+
+    const homePos = randomPos(HOME_SIZE, 24);
+    hx = homePos.x; hy = homePos.y;
+
+    // Käfer möglichst weit vom Baum entfernt starten, damit ein echter Zug entsteht.
+    const minDist = Math.min(stageW, stageH) * 0.45;
+    let fireflyPos;
+    let tries = 0;
+    do{
+      fireflyPos = randomPos(FIREFLY_SIZE, 24);
+      const dx = (fireflyPos.x + FIREFLY_SIZE/2) - (hx + HOME_SIZE/2);
+      const dy = (fireflyPos.y + FIREFLY_SIZE/2) - (hy + HOME_SIZE/2);
+      tries++;
+      if(Math.hypot(dx,dy) >= minDist || tries > 20) break;
+    } while(true);
+
+    fx = fireflyPos.x; fy = fireflyPos.y;
+
+    renderHome();
+    renderFirefly();
+    updateGuideLine();
+  }
+
+  function renderFirefly(){
+    fireflyWrap.style.transform = `translate(${fx}px, ${fy}px)`;
+  }
+  function renderHome(){
+    homeWrap.style.transform = `translate(${hx}px, ${hy}px)`;
+  }
+
+  function updateGuideLine(){
+    if(!guideEnabled || arrived){
+      guideLine.style.opacity = '0';
+      return;
+    }
+    guideLine.style.opacity = '1';
+    guideLine.setAttribute('x1', fx + FIREFLY_SIZE/2);
+    guideLine.setAttribute('y1', fy + FIREFLY_SIZE/2);
+    guideLine.setAttribute('x2', hx + HOME_SIZE/2);
+    guideLine.setAttribute('y2', hy + HOME_SIZE/2);
+  }
+
+  window.addEventListener('resize', () => {
+    stageW = window.innerWidth;
+    stageH = window.innerHeight;
+    fx = Math.min(fx, stageW - FIREFLY_SIZE);
+    fy = Math.min(fy, stageH - FIREFLY_SIZE);
+    hx = Math.min(hx, stageW - HOME_SIZE);
+    hy = Math.min(hy, stageH - HOME_SIZE);
+    renderFirefly();
+    renderHome();
+    updateGuideLine();
+  });
+
+  // --- Punktestand ---
+  let score = 0;
+  function addPoint(){
+    score++;
+    countEl.textContent = score;
+    counterBox.classList.remove('bump');
+    void counterBox.offsetWidth; // reflow, damit Animation neu startet
+    counterBox.classList.add('bump');
+  }
+
+  // --- Erfolgs-Funken ---
+  const sparkEmojis = ['✨','⭐','💫','🌟'];
+  function spawnSparks(centerX, centerY){
+    const n = 8;
+    for(let i=0;i<n;i++){
+      const el = document.createElement('div');
+      el.className = 'spark';
+      el.textContent = sparkEmojis[Math.floor(Math.random()*sparkEmojis.length)];
+      el.style.left = centerX+'px';
+      el.style.top  = centerY+'px';
+      const angle = (Math.PI*2 * i)/n + Math.random()*0.4;
+      const dist = 60 + Math.random()*40;
+      const mx = Math.cos(angle)*dist;
+      const my = Math.sin(angle)*dist;
+      el.style.setProperty('--spark-move', `translate(${mx}px, ${my}px)`);
+      sparkLayer.appendChild(el);
+      setTimeout(() => el.remove(), 750);
+    }
+  }
+
+  // --- Ziehen des Leuchtkäfers ---
+  function moveFireflyTo(clientX, clientY){
+    const rect = stage.getBoundingClientRect();
+    fx = clientX - rect.left - FIREFLY_SIZE/2;
+    fy = clientY - rect.top  - FIREFLY_SIZE/2;
+
+    const maxX = stageW - FIREFLY_SIZE;
+    const maxY = stageH - FIREFLY_SIZE;
+    fx = Math.max(0, Math.min(maxX, fx));
+    fy = Math.max(0, Math.min(maxY, fy));
+
+    renderFirefly();
+    updateGuideLine();
+  }
+
+  function startDrag(e){
+    if(arrived) return;
+    dragging = true;
+    dragPointerId = e.pointerId;
+    fireflyWrap.setPointerCapture(e.pointerId);
+    fireflyWrap.classList.add('dragging');
+    fireflyWrap.classList.remove('miss');
+    moveFireflyTo(e.clientX, e.clientY);
+    e.preventDefault();
+  }
+
+  function duringDrag(e){
+    if(!dragging || e.pointerId !== dragPointerId) return;
+    moveFireflyTo(e.clientX, e.clientY);
+  }
+
+  function endDrag(e){
+    if(!dragging || e.pointerId !== dragPointerId) return;
+    dragging = false;
+    dragPointerId = null;
+    fireflyWrap.classList.remove('dragging');
+    checkArrival();
+  }
+
+  function checkArrival(){
+    if(distanceBetweenCenters() <= catchDistance){
+      arriveHome();
+    } else {
+      fireflyWrap.classList.remove('miss');
+      void fireflyWrap.offsetWidth; // reflow, damit Animation neu startet
+      fireflyWrap.classList.add('miss');
+    }
+  }
+
+  function arriveHome(){
+    if(arrived) return;
+    arrived = true;
+
+    const centerX = hx + HOME_SIZE/2;
+    const centerY = hy + HOME_SIZE/2;
+
+    spawnSparks(centerX, centerY);
+    addPoint();
+    fireflyWrap.classList.add('arrived');
+    homeWrap.classList.add('welcoming');
+    updateGuideLine();
+
+    setTimeout(() => {
+      fireflyWrap.classList.remove('arrived');
+      homeWrap.classList.remove('welcoming');
+      placeNewRound();
+      arrived = false;
+    }, 420);
+  }
+
+  fireflyWrap.addEventListener('pointerdown', startDrag);
+  fireflyWrap.addEventListener('pointermove', duringDrag);
+  fireflyWrap.addEventListener('pointerup', endDrag);
+  fireflyWrap.addEventListener('pointercancel', endDrag);
+
+  // Tippen daneben: bewusst kein Listener auf dem Hintergrund -> keine Reaktion, kein Fehlerzustand.
+
+  // --- Start ---
+  placeNewRound();
+
+})();
+</script>
+
+</body>
+</html>

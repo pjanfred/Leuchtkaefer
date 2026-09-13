@@ -24,6 +24,15 @@ Ein einzelner Leuchtkäfer fliegt frei über den nächtlichen Bildschirm und pra
 
 **Trainiert:** Verfolgen bewegter Ziele, Timing, Feinmotorik.
 
+### 🏡 Leuchtkäfer-Heimweg
+Datei: [`leuchtkaefer-heimweg.html`](./leuchtkaefer-heimweg.html)
+
+![Vorschau: Leuchtkäfer-Heimweg](./assets/preview-heimweg.webp)
+
+Ein Leuchtkäfer wartet darauf, nach Hause gebracht zu werden – das Kind zieht ihn mit dem Finger über den Bildschirm zu seinem leuchtenden Baum. Kommt er nah genug heran, gibt es einen Funken-Effekt und einen Punkt, danach starten Käfer und Baum an neuer Stelle. Im Einstellungs-Menü lassen sich die Zielgröße (Ankunfts-Toleranz) und ein Wegweiser (Linie zum Ziel) einstellen.
+
+**Trainiert:** kontrolliertes Ziehen (Drag), Feinmotorik, Auge-Hand-Koordination – als Ergänzung zum reinen Tippen bei Blitz/Jagd.
+
 ## ☕ Unterstützen
 
 Wenn dir die Spiele gefallen und du das Projekt unterstützen möchtest:
