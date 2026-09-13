@@ -28,7 +28,7 @@ Ein einzelner Leuchtkäfer fliegt frei über den nächtlichen Bildschirm und pra
 
 Wenn dir die Spiele gefallen und du das Projekt unterstützen möchtest:
 
-**☕ [Buy me a coffee](https://www.buymeacoffee.com/pjanfred)**
+[![Buy Me A Coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://buymeacoffee.com/pjanfred)
 
 ## 📄 Lizenz
 
