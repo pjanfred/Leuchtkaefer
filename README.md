@@ -2,7 +2,7 @@
 
 Sammlung kleiner HTML/JS-Minispiele zum Üben von Klicken, Reaktion und Feinmotorik für kleine Kinder – ohne Werbung, ohne Tracking, direkt im Browser spielbar.
 
-Einfach die jeweilige `.html`-Datei herunterladen und im Browser öffnen – es wird kein Server, keine Installation und keine Internetverbindung benötigt. Die Schriftart ([Baloo 2](https://fonts.google.com/specimen/Baloo+2), SIL Open Font License) liegt lokal unter [`fonts/`](./fonts) und wird nicht von Google-Servern nachgeladen – dadurch wird beim Öffnen der Seiten auch keine IP-Adresse an Dritte übertragen.
+Am einfachsten direkt online spielen über die Links unten – oder das ganze Repository klonen bzw. als ZIP herunterladen (`Code` → `Download ZIP`) und eine der `.html`-Dateien im Browser öffnen: dann wird kein Server, keine Installation und keine Internetverbindung benötigt. Wichtig dabei: Die Schriftart ([Baloo 2](https://fonts.google.com/specimen/Baloo+2), SIL Open Font License) liegt lokal unter [`fonts/`](./fonts) und wird nicht von Google-Servern nachgeladen – dafür muss der `fonts/`-Ordner im selben relativen Pfad neben der HTML-Datei liegen. Lädst du dir nur eine einzelne `.html`-Datei einzeln herunter (ohne den `fonts/`-Ordner), funktioniert das Spiel trotzdem, zeigt dann aber statt Baloo 2 die Standardschrift deines Systems.
 
 ## 🎮 Die Spiele
 
@@ -13,7 +13,7 @@ Ein Raster aus Kästchen leuchtet abwechselnd an zufälliger Stelle auf – tipp
 
 **Trainiert:** gezieltes Tippen, visuelle Reaktion, Auge-Hand-Koordination.
 
-▶️ [Direkt ausprobieren](https://htmlpreview.github.io/?https://github.com/pjanfred/Leuchtkaefer/blob/feature/initial_checkin/leuchtkaefer-blitz.html)
+▶️ [Direkt ausprobieren](https://pjanfred.github.io/Leuchtkaefer/leuchtkaefer-blitz.html)
 
 ### 🌙 Leuchtkäfer-Jagd
 Datei: [`leuchtkaefer-jagd.html`](./leuchtkaefer-jagd.html)
@@ -22,9 +22,7 @@ Ein einzelner Leuchtkäfer fliegt frei über den nächtlichen Bildschirm und pra
 
 **Trainiert:** Verfolgen bewegter Ziele, Timing, Feinmotorik.
 
-▶️ [Direkt ausprobieren](https://htmlpreview.github.io/?https://github.com/pjanfred/Leuchtkaefer/blob/feature/initial_checkin/leuchtkaefer-jagd.html)
-
-> Die Vorschau-Links laden die Seiten live über [htmlpreview.github.io](https://htmlpreview.github.io) direkt aus diesem Branch. GitHub Pages ist für `main` bereits aktiviert – sobald dieser Branch dorthin gemerged ist, sollten die Links durch die dauerhaften Pages-URLs ersetzt werden (z. B. `https://pjanfred.github.io/Leuchtkaefer/leuchtkaefer-blitz.html`, siehe Ideen unten).
+▶️ [Direkt ausprobieren](https://pjanfred.github.io/Leuchtkaefer/leuchtkaefer-jagd.html)
 
 ## ☕ Unterstützen
 
@@ -36,7 +34,6 @@ Wenn dir die Spiele gefallen und du das Projekt unterstützen möchtest:
 
 ## 💡 Ideen zur Vervollständigung des Repos
 
-- **Diesen Branch nach `main` mergen**: GitHub Pages ist für `main` bereits aktiviert, aber `main` hat aktuell noch keine HTML-Dateien – erst nach dem Merge sind die Spiele über die dauerhafte Pages-URL (z. B. `https://pjanfred.github.io/Leuchtkaefer/leuchtkaefer-blitz.html`) statt der htmlpreview-Links oben erreichbar.
 - **Startseite/Übersicht (`index.html`)**: Eine kleine Landingpage mit Links/Vorschaubildern zu allen Spielen, damit man nicht die Dateinamen kennen muss.
 - **Screenshots/GIFs** der Spiele in der README, damit man auf einen Blick sieht, wie sie aussehen.
 - **Lizenz** ergänzen (z. B. MIT), falls das Projekt frei nutzbar/weiterverwendbar sein soll.
