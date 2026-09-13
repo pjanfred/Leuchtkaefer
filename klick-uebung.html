@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Leuchtkäfer fangen 🐝</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep: #16213E;
+    --bg-deep-2: #0F1730;
+    --cell: #2B3A63;
+    --cell-edge: #3A4C7D;
+    --glow: #5DE28A;
+    --glow-soft: #A9F5C4;
+    --spark: #FFD166;
+    --cream: #F4F1EA;
+    --panel: #1F2C50;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Baloo 2', system-ui, sans-serif;
+    background: radial-gradient(ellipse at 50% -10%, var(--bg-deep) 0%, var(--bg-deep-2) 70%);
+    color: var(--cream);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  /* drifting background stars, purely decorative, non-distracting */
+  .sky {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .sky span {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: rgba(244,241,234,0.55);
+    border-radius: 50%;
+    animation: twinkle 3.5s ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: .2; }
+    50% { opacity: .9; }
+  }
+
+  header {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: clamp(10px, 2.5vh, 22px) 12px 4px;
+  }
+
+  header h1 {
+    margin: 0;
+    font-size: clamp(22px, 4.2vh, 34px);
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: var(--cream);
+    text-shadow: 0 0 18px rgba(93,226,138,0.25);
+  }
+
+  header p {
+    margin: 4px 0 0;
+    font-size: clamp(13px, 2vh, 17px);
+    color: #B9C3E0;
+    font-weight: 500;
+  }
+
+  .score {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    background: rgba(255,209,102,0.12);
+    border: 1px solid rgba(255,209,102,0.4);
+    padding: 4px 14px;
+    border-radius: 999px;
+    font-size: clamp(13px, 2vh, 16px);
+    font-weight: 700;
+    color: var(--spark);
+  }
+
+  main {
+    position: relative;
+    z-index: 1;
+    height: calc(100% - 100px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px 16px;
+  }
+
+  #grid {
+    display: grid;
+    width: min(100%, 900px);
+    height: 100%;
+    gap: clamp(6px, 1.4vw, 16px);
+  }
+
+  .cell {
+    background: linear-gradient(160deg, var(--cell), #24315A);
+    border: 2px solid var(--cell-edge);
+    border-radius: 22%;
+    cursor: pointer;
+    transition: transform .12s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .cell:active { transform: scale(0.94); }
+
+  .cell.lit {
+    background: radial-gradient(circle at 35% 30%, var(--glow-soft), var(--glow) 65%);
+    border-color: var(--glow-soft);
+    box-shadow: 0 0 22px 6px rgba(93,226,138,0.55), inset 0 0 18px rgba(255,255,255,0.35);
+    animation: pulse 1.15s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.045); }
+  }
+
+  .cell.lit::after {
+    content: "🐝";
+    font-size: clamp(20px, 4.5vw, 40px);
+    filter: drop-shadow(0 0 6px rgba(0,0,0,0.25));
+    animation: buzz 0.6s ease-in-out infinite;
+  }
+
+  @keyframes buzz {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-2px) rotate(-4deg); }
+    75% { transform: translateY(2px) rotate(4deg); }
+  }
+
+  /* pop / spark burst on successful tap */
+  .burst {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(22px, 5vw, 44px);
+    animation: burst-anim 0.55s ease-out forwards;
+  }
+  @keyframes burst-anim {
+    0%   { transform: scale(0.3); opacity: 1; }
+    70%  { transform: scale(1.6); opacity: 0.9; }
+    100% { transform: scale(2.1); opacity: 0; }
+  }
+
+  /* --- settings --- */
+  #gear-btn {
+    position: fixed;
+    bottom: 18px;
+    right: 18px;
+    z-index: 5;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--panel);
+    border: 2px solid var(--cell-edge);
+    color: var(--cream);
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+    transition: transform .2s ease;
+  }
+  #gear-btn:active { transform: scale(0.9) rotate(25deg); }
+
+  #panel {
+    position: fixed;
+    bottom: 82px;
+    right: 18px;
+    z-index: 5;
+    background: var(--panel);
+    border: 2px solid var(--cell-edge);
+    border-radius: 18px;
+    padding: 16px 18px;
+    width: 230px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+    transform-origin: bottom right;
+    transform: scale(0);
+    opacity: 0;
+    transition: transform .18s ease, opacity .18s ease;
+  }
+  #panel.open { transform: scale(1); opacity: 1; }
+
+  #panel h2 {
+    margin: 0 0 12px;
+    font-size: 16px;
+    color: var(--cream);
+    font-weight: 700;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .row label {
+    font-size: 14px;
+    color: #C6CFEA;
+    font-weight: 600;
+  }
+
+  .stepper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #16213E;
+    border-radius: 10px;
+    padding: 2px;
+  }
+
+  .stepper button {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: none;
+    background: var(--cell-edge);
+    color: var(--cream);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .stepper button:active { background: var(--glow); color: #16213E; }
+
+  .stepper span {
+    min-width: 18px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 15px;
+  }
+</style>
+</head>
+<body>
+
+<div class="sky" id="sky"></div>
+
+<header>
+  <h1>Leuchtkäfer fangen</h1>
+  <p>Tipp auf den Kasten, der leuchtet!</p>
+  <div class="score">⭐ <span id="score">0</span></div>
+</header>
+
+<main>
+  <div id="grid"></div>
+</main>
+
+<button id="gear-btn" aria-label="Einstellungen">⚙️</button>
+<div id="panel">
+  <h2>Raster anpassen</h2>
+  <div class="row">
+    <label>Spalten</label>
+    <div class="stepper">
+      <button data-dir="-1" data-axis="cols">–</button>
+      <span id="colsVal">3</span>
+      <button data-dir="1" data-axis="cols">+</button>
+    </div>
+  </div>
+  <div class="row">
+    <label>Zeilen</label>
+    <div class="stepper">
+      <button data-dir="-1" data-axis="rows">–</button>
+      <span id="rowsVal">3</span>
+      <button data-dir="1" data-axis="rows">+</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const grid = document.getElementById('grid');
+  const gearBtn = document.getElementById('gear-btn');
+  const panel = document.getElementById('panel');
+  const colsVal = document.getElementById('colsVal');
+  const rowsVal = document.getElementById('rowsVal');
+  const scoreEl = document.getElementById('score');
+  const sky = document.getElementById('sky');
+
+  let cols = 3, rows = 3, score = 0, litIndex = -1;
+  const MIN = 1, MAX = 6;
+
+  // decorative twinkling background stars
+  for (let i = 0; i < 40; i++) {
+    const s = document.createElement('span');
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 100 + '%';
+    s.style.animationDelay = (Math.random() * 3) + 's';
+    sky.appendChild(s);
+  }
+
+  function buildGrid(){
+    grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+    grid.innerHTML = '';
+    const total = cols * rows;
+    for (let i = 0; i < total; i++){
+      const c = document.createElement('div');
+      c.className = 'cell';
+      c.dataset.index = i;
+      c.addEventListener('click', onCellClick);
+      grid.appendChild(c);
+    }
+    litIndex = -1;
+    lightRandomCell();
+  }
+
+  function lightRandomCell(){
+    const total = cols * rows;
+    const cells = grid.children;
+    if (litIndex >= 0 && cells[litIndex]) cells[litIndex].classList.remove('lit');
+    let next;
+    if (total === 1) {
+      next = 0;
+    } else {
+      do { next = Math.floor(Math.random() * total); } while (next === litIndex);
+    }
+    litIndex = next;
+    cells[litIndex].classList.add('lit');
+  }
+
+  function onCellClick(e){
+    const idx = Number(e.currentTarget.dataset.index);
+    if (idx !== litIndex) return; // ruhig ignorieren, kein Fehlerzustand für Kleinkinder
+    score++;
+    scoreEl.textContent = score;
+
+    const burst = document.createElement('div');
+    burst.className = 'burst';
+    burst.textContent = ['✨','🌟','🎉','💫'][Math.floor(Math.random()*4)];
+    e.currentTarget.appendChild(burst);
+    setTimeout(() => burst.remove(), 550);
+
+    lightRandomCell();
+  }
+
+  function updateDisplays(){
+    colsVal.textContent = cols;
+    rowsVal.textContent = rows;
+  }
+
+  gearBtn.addEventListener('click', () => panel.classList.toggle('open'));
+
+  document.querySelectorAll('.stepper button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const axis = btn.dataset.axis;
+      const dir = Number(btn.dataset.dir);
+      if (axis === 'cols'){
+        cols = Math.min(MAX, Math.max(MIN, cols + dir));
+      } else {
+        rows = Math.min(MAX, Math.max(MIN, rows + dir));
+      }
+      updateDisplays();
+      buildGrid();
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!panel.contains(e.target) && e.target !== gearBtn && panel.classList.contains('open')){
+      panel.classList.remove('open');
+    }
+  });
+
+  updateDisplays();
+  buildGrid();
+})();
+</script>
+
+</body>
+</html>
