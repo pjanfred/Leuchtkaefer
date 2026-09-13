@@ -34,9 +34,14 @@ Wenn dir die Spiele gefallen und du das Projekt unterstützen möchtest:
 
 **☕ [Buy me a coffee](https://www.buymeacoffee.com/pjanfred)**
 
+## 📄 Lizenz
+
+Der Code steht unter der [MIT-Lizenz](./LICENSE) – frei nutzbar, veränderbar und weiterverwendbar.
+
+Die eingebundene Schriftart [Baloo 2](https://fonts.google.com/specimen/Baloo+2) steht unter der [SIL Open Font License](./fonts/OFL.txt).
+
 ## 💡 Ideen zur Vervollständigung des Repos
 
-- **Lizenz** ergänzen (z. B. MIT), falls das Projekt frei nutzbar/weiterverwendbar sein soll.
 - **Favicon** für einen runderen Eindruck beim Öffnen im Browser/Tab.
 - **Sound-Feedback** (optional, abschaltbar) beim Treffer – viele Kinder mögen akustisches Feedback zusätzlich zur Animation.
 - **Weitere Minispiele** nach demselben Muster (eigene HTML-Datei, Zahnrad-Einstellungen, Punktestand) – die README-Struktur oben ist so angelegt, dass neue Spiele einfach als weiterer Abschnitt ergänzt werden können.
