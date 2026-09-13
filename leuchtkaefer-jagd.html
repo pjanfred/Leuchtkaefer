@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Leuchtkäfer-Jagd 🐝🌙</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<style>
+  /* Baloo 2, lokal eingebunden (kein Request an Google-Server, siehe /fonts) */
+  @font-face{
+    font-family:'Baloo 2';
+    font-style:normal;
+    font-weight:500;
+    font-display:swap;
+    src:url('fonts/baloo2-500.woff2') format('woff2');
+  }
+  @font-face{
+    font-family:'Baloo 2';
+    font-style:normal;
+    font-weight:700;
+    font-display:swap;
+    src:url('fonts/baloo2-700.woff2') format('woff2');
+  }
+  @font-face{
+    font-family:'Baloo 2';
+    font-style:normal;
+    font-weight:800;
+    font-display:swap;
+    src:url('fonts/baloo2-800.woff2') format('woff2');
+  }
+
+  :root{
+    --bg-top:#0a0f2b;
+    --bg-bottom:#1b2a5c;
+    --panel-bg:rgba(24,32,66,0.88);
+    --panel-border:rgba(255,255,255,0.14);
+    --star-yellow:#ffe066;
+    --firefly-green:#7CFF6B;
+    --firefly-green-dark:#3fbf3a;
+    --text-light:#f4f6ff;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  html,body{
+    margin:0; padding:0;
+    width:100%; height:100%;
+    overflow:hidden;
+    background:linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+    font-family:'Baloo 2', sans-serif;
+    touch-action:manipulation;
+    user-select:none;
+  }
+
+  #stage{
+    position:relative;
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
+  }
+
+  /* --- Sternenhimmel-Hintergrund --- */
+  .bg-star{
+    position:absolute;
+    border-radius:50%;
+    background:#ffffff;
+    opacity:0.55;
+    animation:twinkle 3s ease-in-out infinite;
+  }
+  @keyframes twinkle{
+    0%,100%{ opacity:0.25; }
+    50%{ opacity:0.9; }
+  }
+
+  .moon{
+    position:absolute;
+    top:4%;
+    right:8%;
+    width:70px;
+    height:70px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #fffbe0, #ffe9a3 60%, #f5d67a 100%);
+    box-shadow:0 0 40px 10px rgba(255,235,170,0.35);
+  }
+
+  /* --- Top-Leiste: Sternchen-Zähler --- */
+  #counter-box{
+    position:absolute;
+    top:18px;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--panel-bg);
+    border:2px solid var(--panel-border);
+    border-radius:30px;
+    padding:10px 26px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.35);
+    z-index:20;
+  }
+  #counter-box .star-icon{
+    font-size:1.6rem;
+    filter:drop-shadow(0 0 6px var(--star-yellow));
+  }
+  #counter-box .count{
+    font-size:1.6rem;
+    font-weight:800;
+    color:var(--text-light);
+    min-width:1.4em;
+    text-align:left;
+  }
+  #counter-box.bump{
+    animation:bump 0.35s ease;
+  }
+  @keyframes bump{
+    0%{ transform:translateX(-50%) scale(1); }
+    40%{ transform:translateX(-50%) scale(1.18); }
+    100%{ transform:translateX(-50%) scale(1); }
+  }
+
+  /* --- Der Leuchtkäfer --- */
+  #firefly-wrap{
+    position:absolute;
+    top:0; left:0;
+    width:96px;
+    height:96px;
+    /* großzügige Tap-Fläche, größer als der sichtbare Punkt */
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    will-change:transform;
+    z-index:10;
+  }
+
+  #firefly-glow{
+    position:relative;
+    width:56px;
+    height:56px;
+    border-radius:50%;
+    background:radial-gradient(circle at 40% 35%, #d9ffd0, var(--firefly-green) 45%, var(--firefly-green-dark) 100%);
+    box-shadow:
+      0 0 18px 6px rgba(124,255,107,0.75),
+      0 0 40px 18px rgba(124,255,107,0.35);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.9rem;
+    line-height:1;
+    animation:pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ transform:scale(1); box-shadow:0 0 18px 6px rgba(124,255,107,0.75), 0 0 40px 18px rgba(124,255,107,0.35); }
+    50%{ transform:scale(1.12); box-shadow:0 0 26px 10px rgba(124,255,107,0.9), 0 0 55px 26px rgba(124,255,107,0.45); }
+  }
+
+  #firefly-wrap.caught #firefly-glow{
+    animation:none;
+    transform:scale(0);
+    transition:transform 0.25s ease-in;
+  }
+
+  /* --- Erfolgs-Funken --- */
+  .spark-layer{
+    position:absolute;
+    top:0; left:0;
+    width:100%; height:100%;
+    pointer-events:none;
+    z-index:15;
+  }
+  .spark{
+    position:absolute;
+    font-size:1.4rem;
+    opacity:1;
+    transform:translate(-50%,-50%) scale(0.6);
+    animation:spark-fly 0.7s ease-out forwards;
+  }
+  @keyframes spark-fly{
+    0%{ opacity:1; transform:translate(-50%,-50%) scale(0.5) translate(0,0); }
+    100%{ opacity:0; transform:translate(-50%,-50%) scale(1.3) var(--spark-move); }
+  }
+
+  /* --- Zahnrad / Einstellungen --- */
+  #gear-btn{
+    position:absolute;
+    bottom:20px;
+    right:20px;
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    background:var(--panel-bg);
+    border:2px solid var(--panel-border);
+    box-shadow:0 8px 18px rgba(0,0,0,0.35);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.7rem;
+    cursor:pointer;
+    z-index:30;
+    transition:transform 0.2s ease;
+  }
+  #gear-btn:active{ transform:scale(0.9) rotate(25deg); }
+
+  #settings-panel{
+    position:absolute;
+    bottom:92px;
+    right:20px;
+    background:var(--panel-bg);
+    border:2px solid var(--panel-border);
+    border-radius:26px;
+    padding:18px 22px;
+    box-shadow:0 10px 26px rgba(0,0,0,0.4);
+    z-index:30;
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+    min-width:220px;
+  }
+  #settings-panel.open{ display:flex; }
+
+  #settings-panel .panel-title{
+    color:var(--text-light);
+    font-size:1.15rem;
+    font-weight:700;
+    text-align:center;
+  }
+
+  .speed-label{
+    min-width:96px;
+    text-align:center;
+    color:var(--star-yellow);
+    font-size:1.3rem;
+    font-weight:800;
+  }
+
+  .slider-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    width:100%;
+  }
+  .slider-row .end-icon{
+    font-size:1.4rem;
+    flex:0 0 auto;
+    filter:drop-shadow(0 0 4px rgba(0,0,0,0.4));
+  }
+
+  #speed-slider{
+    -webkit-appearance:none;
+    appearance:none;
+    width:170px;
+    height:14px;
+    border-radius:10px;
+    background:linear-gradient(90deg,#3a4a92,#5a72d0);
+    outline:none;
+    cursor:pointer;
+  }
+  #speed-slider::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    appearance:none;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background:radial-gradient(circle at 40% 35%, #d9ffd0, var(--firefly-green) 45%, var(--firefly-green-dark) 100%);
+    box-shadow:0 0 10px 3px rgba(124,255,107,0.8), 0 2px 6px rgba(0,0,0,0.4);
+    border:2px solid #fff;
+    cursor:pointer;
+  }
+  #speed-slider::-moz-range-thumb{
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background:radial-gradient(circle at 40% 35%, #d9ffd0, var(--firefly-green) 45%, var(--firefly-green-dark) 100%);
+    box-shadow:0 0 10px 3px rgba(124,255,107,0.8), 0 2px 6px rgba(0,0,0,0.4);
+    border:2px solid #fff;
+    cursor:pointer;
+  }
+  #speed-slider::-moz-range-track{
+    height:14px;
+    border-radius:10px;
+    background:linear-gradient(90deg,#3a4a92,#5a72d0);
+  }
+
+  /* --- Toggle: Kurviger fliegen --- */
+  .toggle-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    width:100%;
+    margin-top:4px;
+  }
+  .toggle-row .toggle-text{
+    color:var(--text-light);
+    font-size:1.05rem;
+    font-weight:700;
+    text-align:left;
+  }
+  .toggle-switch{
+    position:relative;
+    flex:0 0 auto;
+    width:58px;
+    height:32px;
+  }
+  .toggle-switch input{
+    opacity:0;
+    width:0;
+    height:0;
+    position:absolute;
+  }
+  .toggle-track{
+    position:absolute;
+    inset:0;
+    background:#3a4270;
+    border:2px solid var(--panel-border);
+    border-radius:20px;
+    cursor:pointer;
+    transition:background 0.2s ease;
+  }
+  .toggle-track::before{
+    content:"";
+    position:absolute;
+    left:3px;
+    top:3px;
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    background:#dfe3ff;
+    box-shadow:0 2px 5px rgba(0,0,0,0.35);
+    transition:transform 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
+  }
+  #curvy-toggle:checked + .toggle-track{
+    background:#2f6e35;
+  }
+  #curvy-toggle:checked + .toggle-track::before{
+    transform:translateX(26px);
+    background:radial-gradient(circle at 40% 35%, #d9ffd0, var(--firefly-green) 45%, var(--firefly-green-dark) 100%);
+    box-shadow:0 0 8px 2px rgba(124,255,107,0.8);
+  }
+
+  #close-panel{
+    margin-top:4px;
+    background:none;
+    border:none;
+    color:var(--text-light);
+    opacity:0.75;
+    font-size:1rem;
+    font-family:'Baloo 2', sans-serif;
+    cursor:pointer;
+  }
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <div class="moon"></div>
+
+  <!-- Sternchen-Zähler -->
+  <div id="counter-box">
+    <span class="star-icon">⭐</span>
+    <span class="count" id="count">0</span>
+  </div>
+
+  <!-- Funken-Layer für Erfolgsanimation -->
+  <div class="spark-layer" id="spark-layer"></div>
+
+  <!-- Der Leuchtkäfer -->
+  <div id="firefly-wrap">
+    <div id="firefly-glow">🐝</div>
+  </div>
+
+  <!-- Zahnrad-Einstellungen -->
+  <button id="gear-btn" aria-label="Einstellungen">⚙️</button>
+  <div id="settings-panel">
+    <div class="panel-title">Wie schnell fliegt<br>der Leuchtkäfer?</div>
+    <span class="speed-label" id="speed-label">Langsam</span>
+    <div class="slider-row">
+      <span class="end-icon">🐢</span>
+      <input type="range" id="speed-slider" min="10" max="220" step="1" value="45">
+      <span class="end-icon">🐇</span>
+    </div>
+    <div class="toggle-row">
+      <span class="toggle-text">Kurviger fliegen</span>
+      <span class="toggle-switch">
+        <input type="checkbox" id="curvy-toggle">
+        <label class="toggle-track" for="curvy-toggle"></label>
+      </span>
+    </div>
+    <button id="close-panel">Schließen</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  const stage       = document.getElementById('stage');
+  const fireflyWrap = document.getElementById('firefly-wrap');
+  const counterBox  = document.getElementById('counter-box');
+  const countEl     = document.getElementById('count');
+  const sparkLayer  = document.getElementById('spark-layer');
+
+  const gearBtn      = document.getElementById('gear-btn');
+  const settingsPanel= document.getElementById('settings-panel');
+  const closePanelBtn= document.getElementById('close-panel');
+  const speedLabel   = document.getElementById('speed-label');
+  const speedSlider  = document.getElementById('speed-slider');
+  const curvyToggle  = document.getElementById('curvy-toggle');
+
+  // --- Hintergrund-Sterne erzeugen ---
+  function createBackgroundStars(count){
+    for(let i=0;i<count;i++){
+      const s = document.createElement('div');
+      s.className = 'bg-star';
+      const size = 1 + Math.random()*2.5;
+      s.style.width  = size+'px';
+      s.style.height = size+'px';
+      s.style.left = (Math.random()*100)+'vw';
+      s.style.top  = (Math.random()*90)+'vh';
+      s.style.animationDelay = (Math.random()*3)+'s';
+      stage.insertBefore(s, stage.firstChild.nextSibling);
+    }
+  }
+  createBackgroundStars(45);
+
+  // --- Geschwindigkeit (Pixel pro Sekunde), stufenlos per Schieberegler ---
+  let currentSpeedValue = parseFloat(speedSlider.value); // px/Sek.
+
+  function speedLabelFor(v){
+    if(v <= 30)  return 'Sehr langsam';
+    if(v <= 65)  return 'Langsam';
+    if(v <= 120) return 'Mittel';
+    if(v <= 175) return 'Schnell';
+    return 'Sehr schnell';
+  }
+
+  function updateSpeedUI(){
+    speedLabel.textContent = speedLabelFor(currentSpeedValue);
+  }
+
+  function applyCurrentSpeedToVelocity(){
+    // Richtung beibehalten, nur Betrag (Tempo) anpassen
+    const currentSpeed = Math.hypot(vx, vy) || 1;
+    const scale = currentSpeedValue / currentSpeed;
+    vx *= scale;
+    vy *= scale;
+  }
+
+  speedSlider.addEventListener('input', () => {
+    currentSpeedValue = parseFloat(speedSlider.value);
+    updateSpeedUI();
+    applyCurrentSpeedToVelocity();
+  });
+
+  // --- Kurviger Flug (Standard: aus) ---
+  let curvyEnabled = false;
+  curvyToggle.checked = false;
+  curvyToggle.addEventListener('change', () => {
+    curvyEnabled = curvyToggle.checked;
+    angularVelocity = 0; // sauberer Start ohne Drall beim Umschalten
+  });
+
+  gearBtn.addEventListener('click', () => {
+    settingsPanel.classList.toggle('open');
+  });
+  closePanelBtn.addEventListener('click', () => {
+    settingsPanel.classList.remove('open');
+  });
+
+  updateSpeedUI();
+
+  // --- Bewegung des Leuchtkäfers (DVD-Logo-Bounce) ---
+  const WRAP_SIZE = 96; // muss zu #firefly-wrap width/height passen
+
+  let x=0, y=0, vx=0, vy=0;
+  let angle=0, angularVelocity=0; // für den kurvigen Flugmodus
+  let stageW = window.innerWidth;
+  let stageH = window.innerHeight;
+  let lastTime = null;
+  let caught = false; // während Fang-Animation pausiert die Bewegung kurz
+
+  // Zufälligkeit/Trägheit der Kurven (nur relevant wenn curvyEnabled = true)
+  const CURVE_JERK      = 3.2;  // wie stark sich die Drehrichtung zufällig ändert
+  const CURVE_MAX_TURN  = 2.4;  // maximale Drehgeschwindigkeit (rad/s)
+  const CURVE_DAMPING   = 1.4;  // bremst die Drehgeschwindigkeit sanft ein
+
+  function randomDirectionWithSpeed(speed){
+    const angle = Math.random() * Math.PI * 2;
+    return { vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed };
+  }
+
+  function resetPosition(randomizePos){
+    stageW = window.innerWidth;
+    stageH = window.innerHeight;
+
+    if(randomizePos){
+      // Startpunkt zufällig, mit Rand-Sicherheitsabstand
+      const margin = WRAP_SIZE;
+      x = margin + Math.random() * Math.max(1, (stageW - 2*margin));
+      y = margin + Math.random() * Math.max(1, (stageH - 2*margin));
+    }
+
+    const dir = randomDirectionWithSpeed(currentSpeedValue);
+    vx = dir.vx;
+    vy = dir.vy;
+    angle = Math.atan2(vy, vx);
+    angularVelocity = 0;
+  }
+
+  function render(){
+    fireflyWrap.style.transform = `translate(${x}px, ${y}px)`;
+  }
+
+  function step(timestamp){
+    if(lastTime === null) lastTime = timestamp;
+    const dt = Math.min((timestamp - lastTime) / 1000, 0.05); // Sekunden, gekappt
+    lastTime = timestamp;
+
+    if(!caught){
+      if(curvyEnabled){
+        // sanfte, zufällige Richtungsänderung (kein hartes Zick-Zack)
+        angularVelocity += (Math.random() - 0.5) * CURVE_JERK * dt;
+        angularVelocity = Math.max(-CURVE_MAX_TURN, Math.min(CURVE_MAX_TURN, angularVelocity));
+        angularVelocity *= Math.exp(-CURVE_DAMPING * dt);
+        angle += angularVelocity * dt;
+        vx = Math.cos(angle) * currentSpeedValue;
+        vy = Math.sin(angle) * currentSpeedValue;
+      }
+
+      x += vx * dt;
+      y += vy * dt;
+
+      const maxX = stageW - WRAP_SIZE;
+      const maxY = stageH - WRAP_SIZE;
+
+      if(x <= 0){ x = 0; vx = Math.abs(vx); }
+      else if(x >= maxX){ x = maxX; vx = -Math.abs(vx); }
+
+      if(y <= 0){ y = 0; vy = Math.abs(vy); }
+      else if(y >= maxY){ y = maxY; vy = -Math.abs(vy); }
+
+      angle = Math.atan2(vy, vx); // Blickwinkel nach evtl. Wandreflexion synchron halten
+
+      render();
+    }
+
+    requestAnimationFrame(step);
+  }
+
+  window.addEventListener('resize', () => {
+    stageW = window.innerWidth;
+    stageH = window.innerHeight;
+    x = Math.min(x, stageW - WRAP_SIZE);
+    y = Math.min(y, stageH - WRAP_SIZE);
+  });
+
+  // --- Punktestand ---
+  let score = 0;
+  function addPoint(){
+    score++;
+    countEl.textContent = score;
+    counterBox.classList.remove('bump');
+    void counterBox.offsetWidth; // reflow, damit Animation neu startet
+    counterBox.classList.add('bump');
+  }
+
+  // --- Erfolgs-Funken ---
+  const sparkEmojis = ['✨','⭐','💫','🌟'];
+  function spawnSparks(centerX, centerY){
+    const n = 8;
+    for(let i=0;i<n;i++){
+      const el = document.createElement('div');
+      el.className = 'spark';
+      el.textContent = sparkEmojis[Math.floor(Math.random()*sparkEmojis.length)];
+      el.style.left = centerX+'px';
+      el.style.top  = centerY+'px';
+      const angle = (Math.PI*2 * i)/n + Math.random()*0.4;
+      const dist = 60 + Math.random()*40;
+      const mx = Math.cos(angle)*dist;
+      const my = Math.sin(angle)*dist;
+      el.style.setProperty('--spark-move', `translate(${mx}px, ${my}px)`);
+      sparkLayer.appendChild(el);
+      setTimeout(() => el.remove(), 750);
+    }
+  }
+
+  // --- Fang-Interaktion ---
+  function catchFirefly(){
+    if(caught) return;
+    caught = true;
+
+    const centerX = x + WRAP_SIZE/2;
+    const centerY = y + WRAP_SIZE/2;
+
+    spawnSparks(centerX, centerY);
+    addPoint();
+    fireflyWrap.classList.add('caught');
+
+    setTimeout(() => {
+      fireflyWrap.classList.remove('caught');
+      resetPosition(true);
+      caught = false;
+    }, 320);
+  }
+
+  fireflyWrap.addEventListener('pointerdown', (e) => {
+    e.stopPropagation();
+    catchFirefly();
+  });
+
+  // Tippen daneben: bewusst kein Listener auf dem Hintergrund -> keine Reaktion, kein Fehlerzustand.
+
+  // --- Start ---
+  resetPosition(true);
+  requestAnimationFrame(step);
+
+})();
+</script>
+
+</body>
+</html>

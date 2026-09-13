@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leuchtkäfer 🐝 – Minispiele für kleine Kinder</title>
+<meta name="description" content="Kleine HTML/JS-Minispiele zum Üben von Klicken, Reaktion und Feinmotorik – ohne Werbung, ohne Tracking, direkt im Browser spielbar.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<style>
+  @font-face{
+    font-family:'Baloo 2';
+    font-style:normal;
+    font-weight:500;
+    font-display:swap;
+    src:url('fonts/baloo2-500.woff2') format('woff2');
+  }
+  @font-face{
+    font-family:'Baloo 2';
+    font-style:normal;
+    font-weight:700;
+    font-display:swap;
+    src:url('fonts/baloo2-700.woff2') format('woff2');
+  }
+  @font-face{
+    font-family:'Baloo 2';
+    font-style:normal;
+    font-weight:800;
+    font-display:swap;
+    src:url('fonts/baloo2-800.woff2') format('woff2');
+  }
+
+  :root{
+    --bg-deep: #16213E;
+    --bg-deep-2: #0F1730;
+    --cell: #2B3A63;
+    --cell-edge: #3A4C7D;
+    --glow: #5DE28A;
+    --glow-soft: #A9F5C4;
+    --spark: #FFD166;
+    --cream: #F4F1EA;
+    --panel: #1F2C50;
+    --muted: #B9C3E0;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0;
+    min-height:100%;
+    font-family:'Baloo 2', system-ui, sans-serif;
+    background: radial-gradient(ellipse at 50% -10%, var(--bg-deep) 0%, var(--bg-deep-2) 70%);
+    color: var(--cream);
+  }
+
+  .wrap{
+    max-width: 980px;
+    margin: 0 auto;
+    padding: clamp(20px, 5vh, 56px) 20px 40px;
+  }
+
+  header{
+    text-align:center;
+    margin-bottom: clamp(28px, 5vh, 48px);
+  }
+
+  header h1{
+    margin:0;
+    font-size: clamp(30px, 6vw, 46px);
+    font-weight:800;
+    text-shadow: 0 0 18px rgba(93,226,138,0.25);
+  }
+
+  header p{
+    margin: 10px auto 0;
+    max-width: 620px;
+    font-size: clamp(15px, 2.2vw, 18px);
+    color: var(--muted);
+    font-weight:500;
+    line-height:1.5;
+  }
+
+  .badges{
+    margin-top:16px;
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .badge{
+    background: rgba(255,209,102,0.12);
+    border: 1px solid rgba(255,209,102,0.4);
+    color: var(--spark);
+    padding: 4px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight:700;
+  }
+
+  .games{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: clamp(18px, 3vw, 28px);
+  }
+
+  .card{
+    background: linear-gradient(160deg, var(--cell), #24315A);
+    border: 2px solid var(--cell-edge);
+    border-radius: 24px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    text-decoration:none;
+    color: inherit;
+    transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+  }
+
+  .card:hover, .card:focus-visible{
+    transform: translateY(-4px);
+    border-color: var(--glow-soft);
+    box-shadow: 0 14px 30px rgba(93,226,138,0.18);
+  }
+
+  .card img{
+    display:block;
+    width:100%;
+    aspect-ratio: 8 / 5;
+    object-fit: cover;
+    background: var(--bg-deep-2);
+  }
+
+  .card-body{
+    padding: 18px 20px 22px;
+  }
+
+  .card h2{
+    margin:0 0 6px;
+    font-size: 22px;
+    font-weight:800;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .card p{
+    margin:0 0 12px;
+    font-size: 14.5px;
+    color: var(--muted);
+    line-height:1.5;
+  }
+
+  .card .cta{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-weight:700;
+    font-size:14px;
+    color: var(--glow-soft);
+  }
+
+  footer{
+    margin-top: clamp(36px, 6vh, 56px);
+    text-align:center;
+  }
+
+  footer p{
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0 0 14px;
+  }
+
+  .coffee-link{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    text-decoration:none;
+    background: var(--spark);
+    color: #16213E;
+    font-family:'Baloo 2', system-ui, sans-serif;
+    font-weight:700;
+    font-size:16px;
+    padding: 12px 22px;
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(255,209,102,0.25);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+
+  .coffee-link:hover, .coffee-link:focus-visible{
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(255,209,102,0.35);
+  }
+
+  .source-link{
+    display:block;
+    margin-top:16px;
+    color: var(--muted);
+    font-size:13px;
+  }
+
+  .source-link a{
+    color: var(--glow-soft);
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>🐝 Leuchtkäfer</h1>
+    <p>Kleine HTML/JS-Minispiele zum Üben von Klicken, Reaktion und Feinmotorik für kleine Kinder – direkt im Browser spielbar.</p>
+    <div class="badges">
+      <span class="badge">🚫 keine Werbung</span>
+      <span class="badge">🚫 kein Tracking</span>
+      <span class="badge">📴 offline spielbar</span>
+    </div>
+  </header>
+
+  <main class="games">
+    <a class="card" href="leuchtkaefer-blitz.html">
+      <img src="assets/preview-blitz.webp" alt="Vorschau: Leuchtkäfer-Blitz – ein leuchtendes Kästchen in einem 3x3-Raster" loading="lazy" width="960" height="600">
+      <div class="card-body">
+        <h2>⚡ Leuchtkäfer-Blitz</h2>
+        <p>Ein Kästchen im Raster leuchtet auf – schnell draufgetippt! Rastergröße lässt sich anpassen.</p>
+        <span class="cta">Spielen ▶</span>
+      </div>
+    </a>
+
+    <a class="card" href="leuchtkaefer-jagd.html">
+      <img src="assets/preview-jagd.webp" alt="Vorschau: Leuchtkäfer-Jagd – ein fliegender Leuchtkäfer vor nächtlichem Himmel" loading="lazy" width="960" height="600">
+      <div class="card-body">
+        <h2>🌙 Leuchtkäfer-Jagd</h2>
+        <p>Ein Leuchtkäfer fliegt frei über den Bildschirm – fang ihn ein! Tempo und Flugkurve einstellbar.</p>
+        <span class="cta">Spielen ▶</span>
+      </div>
+    </a>
+  </main>
+
+  <footer>
+    <p>Gefällt dir das Projekt? Dann freue ich mich über einen Kaffee</p>
+    <a class="coffee-link" href="https://www.buymeacoffee.com/pjanfred" target="_blank" rel="noopener">☕ Buy me a coffee</a>
+    <p class="source-link">Quellcode auf <a href="https://github.com/pjanfred/Leuchtkaefer" target="_blank" rel="noopener">GitHub</a></p>
+  </footer>
+</div>
+
+</body>
+</html>
