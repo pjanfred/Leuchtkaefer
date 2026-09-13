@@ -120,7 +120,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px 16px 16px;
+    padding: 10px 16px calc(16px + 82px + env(safe-area-inset-bottom, 0px));
   }
 
   #grid {
@@ -322,7 +322,7 @@
   const sky = document.getElementById('sky');
 
   let cols = 3, rows = 3, score = 0, litIndex = -1;
-  const MIN = 1, MAX = 6;
+  const MIN = 1, MAX = 10;
 
   // decorative twinkling background stars
   for (let i = 0; i < 40; i++) {
