@@ -39,3 +39,7 @@ Wenn dir die Spiele gefallen und du das Projekt unterstützen möchtest:
 Der Code steht unter der [MIT-Lizenz](./LICENSE) – frei nutzbar, veränderbar und weiterverwendbar.
 
 Die eingebundene Schriftart [Baloo 2](https://fonts.google.com/specimen/Baloo+2) steht unter der [SIL Open Font License](./fonts/OFL.txt).
+
+## ℹ️ Impressum & Datenschutz
+
+[Impressum](https://pjanfred.github.io/Leuchtkaefer/impressum.html) · [Datenschutzerklärung](https://pjanfred.github.io/Leuchtkaefer/datenschutz.html)
