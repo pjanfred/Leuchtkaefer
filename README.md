@@ -4,6 +4,8 @@ Sammlung kleiner HTML/JS-Minispiele zum Üben von Klicken, Reaktion und Feinmoto
 
 Am einfachsten das ganze Repository klonen bzw. als ZIP herunterladen (`Code` → `Download ZIP`) und [`index.html`](./index.html) (Spieleübersicht) oder eine der `.html`-Dateien im Browser öffnen: dann wird kein Server, keine Installation und keine Internetverbindung benötigt. Wichtig dabei: Die Schriftart ([Baloo 2](https://fonts.google.com/specimen/Baloo+2), SIL Open Font License) liegt lokal unter [`fonts/`](./fonts) und wird nicht von Google-Servern nachgeladen – dafür muss der `fonts/`-Ordner im selben relativen Pfad neben der HTML-Datei liegen. Lädst du dir nur eine einzelne `.html`-Datei einzeln herunter (ohne den `fonts/`-Ordner), funktioniert das Spiel trotzdem, zeigt dann aber statt Baloo 2 die Standardschrift deines Systems.
 
+> **ℹ️ Hinweis zu KI-generierten Inhalten:** Die Spiele in diesem Repository wurden mit Unterstützung von KI-Tools (u. a. für Code, Grafiken und Texte) erstellt. Dieser Hinweis dient der Transparenz gemäß den Informationspflichten der KI-Verordnung (EU AI Act).
+
 ## 🎮 Die Spiele
 
 ### ⚡ Leuchtkäfer-Blitz
