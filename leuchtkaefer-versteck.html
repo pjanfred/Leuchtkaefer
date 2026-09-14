@@ -133,6 +133,15 @@
     gap: clamp(10px, 2.2vw, 20px);
   }
 
+  /* --- Zufällig verteilt: Verstecke frei über die Fläche gestreut --- */
+  #grid.scattered {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+  }
+
   .cell {
     position: relative;
     background: linear-gradient(160deg, var(--cell), #24315A);
@@ -145,6 +154,12 @@
     align-items: center;
     justify-content: center;
     transition: transform .12s ease, border-color .2s ease;
+  }
+
+  .cell.scattered-item {
+    position: absolute;
+    width: clamp(64px, 11vw, 100px);
+    height: clamp(64px, 11vw, 100px);
   }
 
   .cell:active { transform: scale(0.94); }
@@ -348,10 +363,10 @@
     box-shadow: 0 2px 5px rgba(0,0,0,0.35);
     transition: transform 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
   }
-  #hint-toggle:checked + .toggle-track {
+  .toggle-switch input:checked + .toggle-track {
     background: #2f6e35;
   }
-  #hint-toggle:checked + .toggle-track::before {
+  .toggle-switch input:checked + .toggle-track::before {
     transform: translateX(22px);
     background: radial-gradient(circle at 40% 35%, #d9ffd0, var(--glow) 45%, #3fbf3a 100%);
     box-shadow: 0 0 8px 2px rgba(93,226,138,0.8);
@@ -390,6 +405,13 @@
       <label class="toggle-track" for="hint-toggle"></label>
     </span>
   </div>
+  <div class="row">
+    <label>Zufällig verteilt</label>
+    <span class="toggle-switch">
+      <input type="checkbox" id="scatter-toggle">
+      <label class="toggle-track" for="scatter-toggle"></label>
+    </span>
+  </div>
 </div>
 
 <script>
@@ -403,10 +425,12 @@
   const scoreEl = document.getElementById('score');
   const sky = document.getElementById('sky');
   const hintToggle = document.getElementById('hint-toggle');
+  const scatterToggle = document.getElementById('scatter-toggle');
 
   let count = 6, score = 0, secretIndex = -1, roundLocked = false;
   const MIN = 3, MAX = 12;
   let hintEnabled = hintToggle.checked;
+  let scatterEnabled = scatterToggle.checked;
 
   const spotEmojis = ['🌿','🍃','🍄','🌻','🪨','🎋','🌵','🪵','🍂','🌾'];
 
@@ -425,12 +449,13 @@
 
   function buildGrid(){
     grid.innerHTML = '';
+    grid.classList.toggle('scattered', scatterEnabled);
     roundLocked = false;
     secretIndex = Math.floor(Math.random() * count);
 
     for (let i = 0; i < count; i++){
       const cell = document.createElement('div');
-      cell.className = 'cell';
+      cell.className = 'cell' + (scatterEnabled ? ' scattered-item' : '');
       cell.dataset.index = i;
 
       const firefly = document.createElement('div');
@@ -449,6 +474,35 @@
       cell.addEventListener('click', onCellClick);
       grid.appendChild(cell);
     }
+
+    if (scatterEnabled) layoutScattered();
+  }
+
+  // Positioniert die Versteck-Kacheln frei im Spielbereich, mit etwas
+  // Mindestabstand zueinander (best effort, kein hartes Kollisionssystem).
+  function layoutScattered(){
+    const cells = Array.from(grid.children);
+    if (!cells.length) return;
+
+    const w = grid.clientWidth;
+    const h = grid.clientHeight;
+    const size = cells[0].offsetWidth || 84;
+    const minDist = size * 1.05;
+    const maxAttempts = 200;
+    const placed = [];
+
+    cells.forEach(cell => {
+      let x = 0, y = 0, attempts = 0, ok = false;
+      while (attempts < maxAttempts && !ok){
+        x = Math.random() * Math.max(1, w - size);
+        y = Math.random() * Math.max(1, h - size);
+        ok = placed.every(p => Math.hypot(p.x - x, p.y - y) >= minDist);
+        attempts++;
+      }
+      placed.push({ x, y });
+      cell.style.left = x + 'px';
+      cell.style.top = y + 'px';
+    });
   }
 
   function onCellClick(e){
@@ -499,6 +553,18 @@
   hintToggle.addEventListener('change', () => {
     hintEnabled = hintToggle.checked;
     buildGrid();
+  });
+
+  scatterToggle.addEventListener('change', () => {
+    scatterEnabled = scatterToggle.checked;
+    buildGrid();
+  });
+
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    if (!scatterEnabled) return;
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(layoutScattered, 150);
   });
 
   countVal.textContent = count;
