@@ -24,6 +24,15 @@ Ein einzelner Leuchtkäfer fliegt frei über den nächtlichen Bildschirm und pra
 
 **Trainiert:** Verfolgen bewegter Ziele, Timing, Feinmotorik.
 
+### 🔍 Leuchtkäfer-Versteck
+Datei: [`leuchtkaefer-versteck.html`](./leuchtkaefer-versteck.html)
+
+![Vorschau: Leuchtkäfer-Versteck](./assets/preview-versteck.webp)
+
+Mehrere Verstecke (Blätter, Pilze, Steine …) liegen auf dem Bildschirm – dahinter versteckt sich ein Leuchtkäfer. Das Kind tippt die Verstecke der Reihe nach durch, bis der Leuchtkäfer gefunden ist und aufleuchtet. Im Einstellungs-Menü lässt sich die Anzahl der Verstecke anpassen und ein Hinweis-Leuchten am richtigen Versteck ein- oder ausschalten.
+
+**Trainiert:** systematisches Suchen, Geduld, Objektpermanenz.
+
 ## ☕ Unterstützen
 
 Wenn dir die Spiele gefallen und du das Projekt unterstützen möchtest:

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Leuchtkäfer-Versteck 🐝🔍</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<style>
+  /* Baloo 2, lokal eingebunden (kein Request an Google-Server, siehe /fonts) */
+  @font-face{
+    font-family:'Baloo 2';
+    font-style:normal;
+    font-weight:500;
+    font-display:swap;
+    src:url('fonts/baloo2-500.woff2') format('woff2');
+  }
+  @font-face{
+    font-family:'Baloo 2';
+    font-style:normal;
+    font-weight:700;
+    font-display:swap;
+    src:url('fonts/baloo2-700.woff2') format('woff2');
+  }
+  @font-face{
+    font-family:'Baloo 2';
+    font-style:normal;
+    font-weight:800;
+    font-display:swap;
+    src:url('fonts/baloo2-800.woff2') format('woff2');
+  }
+
+  :root{
+    --bg-deep: #16213E;
+    --bg-deep-2: #0F1730;
+    --cell: #2B3A63;
+    --cell-edge: #3A4C7D;
+    --glow: #5DE28A;
+    --glow-soft: #A9F5C4;
+    --spark: #FFD166;
+    --cream: #F4F1EA;
+    --panel: #1F2C50;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Baloo 2', system-ui, sans-serif;
+    background: radial-gradient(ellipse at 50% -10%, var(--bg-deep) 0%, var(--bg-deep-2) 70%);
+    color: var(--cream);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  /* drifting background stars, purely decorative, non-distracting */
+  .sky {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .sky span {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: rgba(244,241,234,0.55);
+    border-radius: 50%;
+    animation: twinkle 3.5s ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: .2; }
+    50% { opacity: .9; }
+  }
+
+  header {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: clamp(10px, 2.5vh, 22px) 12px 4px;
+  }
+
+  header h1 {
+    margin: 0;
+    font-size: clamp(22px, 4.2vh, 34px);
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: var(--cream);
+    text-shadow: 0 0 18px rgba(93,226,138,0.25);
+  }
+
+  header p {
+    margin: 4px 0 0;
+    font-size: clamp(13px, 2vh, 17px);
+    color: #B9C3E0;
+    font-weight: 500;
+  }
+
+  .score {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    background: rgba(255,209,102,0.12);
+    border: 1px solid rgba(255,209,102,0.4);
+    padding: 4px 14px;
+    border-radius: 999px;
+    font-size: clamp(13px, 2vh, 16px);
+    font-weight: 700;
+    color: var(--spark);
+  }
+
+  main {
+    position: relative;
+    z-index: 1;
+    height: calc(100% - 100px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px calc(16px + 82px + env(safe-area-inset-bottom, 0px));
+  }
+
+  #grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(76px, 1fr));
+    grid-auto-rows: minmax(76px, 1fr);
+    align-content: center;
+    width: min(100%, 900px);
+    max-height: 100%;
+    gap: clamp(10px, 2.2vw, 20px);
+  }
+
+  .cell {
+    position: relative;
+    background: linear-gradient(160deg, var(--cell), #24315A);
+    border: 2px solid var(--cell-edge);
+    border-radius: 40%;
+    aspect-ratio: 1;
+    cursor: pointer;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform .12s ease, border-color .2s ease;
+  }
+
+  .cell:active { transform: scale(0.94); }
+
+  .firefly-hidden {
+    position: absolute;
+    font-size: clamp(20px, 4.5vw, 38px);
+    line-height: 1;
+    opacity: 0;
+    transform: scale(0.4);
+    filter: drop-shadow(0 0 10px rgba(124,255,107,0.9));
+    transition: opacity .3s ease, transform .3s ease;
+    z-index: 1;
+  }
+
+  .spot {
+    position: relative;
+    font-size: clamp(26px, 5.5vw, 46px);
+    line-height: 1;
+    z-index: 2;
+    transition: opacity .3s ease, transform .3s ease;
+  }
+
+  /* sanftes Leuchten am richtigen Versteck, wenn Hinweis aktiv ist */
+  .cell.hint .spot {
+    animation: hintGlow 1.4s ease-in-out infinite;
+  }
+  @keyframes hintGlow {
+    0%, 100% { filter: drop-shadow(0 0 0 rgba(93,226,138,0)); }
+    50% { filter: drop-shadow(0 0 10px rgba(93,226,138,0.85)); }
+  }
+
+  .cell.found {
+    border-color: var(--glow-soft);
+    box-shadow: 0 0 20px 4px rgba(93,226,138,0.4);
+  }
+  .cell.found .firefly-hidden {
+    opacity: 1;
+    transform: scale(1.1);
+    animation: pulseFirefly 0.9s ease-in-out infinite;
+  }
+  .cell.found .spot {
+    opacity: 0;
+    transform: scale(0.4) rotate(20deg) translateY(10px);
+  }
+  @keyframes pulseFirefly {
+    0%, 100% { transform: scale(1.1); }
+    50% { transform: scale(1.28); }
+  }
+
+  .cell.wrong {
+    animation: shake 0.4s ease;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  /* pop / spark burst on successful find */
+  .burst {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(22px, 5vw, 44px);
+    z-index: 3;
+    animation: burst-anim 0.55s ease-out forwards;
+  }
+  @keyframes burst-anim {
+    0%   { transform: scale(0.3); opacity: 1; }
+    70%  { transform: scale(1.6); opacity: 0.9; }
+    100% { transform: scale(2.1); opacity: 0; }
+  }
+
+  /* --- settings --- */
+  #gear-btn {
+    position: fixed;
+    bottom: 18px;
+    right: 18px;
+    z-index: 5;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--panel);
+    border: 2px solid var(--cell-edge);
+    color: var(--cream);
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+    transition: transform .2s ease;
+  }
+  #gear-btn:active { transform: scale(0.9) rotate(25deg); }
+
+  #panel {
+    position: fixed;
+    bottom: 82px;
+    right: 18px;
+    z-index: 5;
+    background: var(--panel);
+    border: 2px solid var(--cell-edge);
+    border-radius: 18px;
+    padding: 16px 18px;
+    width: 240px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+    transform-origin: bottom right;
+    transform: scale(0);
+    opacity: 0;
+    transition: transform .18s ease, opacity .18s ease;
+  }
+  #panel.open { transform: scale(1); opacity: 1; }
+
+  #panel h2 {
+    margin: 0 0 12px;
+    font-size: 16px;
+    color: var(--cream);
+    font-weight: 700;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    gap: 10px;
+  }
+
+  .row label {
+    font-size: 14px;
+    color: #C6CFEA;
+    font-weight: 600;
+  }
+
+  .stepper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #16213E;
+    border-radius: 10px;
+    padding: 2px;
+  }
+
+  .stepper button {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: none;
+    background: var(--cell-edge);
+    color: var(--cream);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .stepper button:active { background: var(--glow); color: #16213E; }
+
+  .stepper span {
+    min-width: 18px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 15px;
+  }
+
+  /* --- Toggle: Hinweis-Leuchten --- */
+  .toggle-switch {
+    position: relative;
+    flex: 0 0 auto;
+    width: 50px;
+    height: 28px;
+  }
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+  }
+  .toggle-track {
+    position: absolute;
+    inset: 0;
+    background: #16213E;
+    border: 2px solid var(--cell-edge);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .toggle-track::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #dfe3ff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.35);
+    transition: transform 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
+  }
+  #hint-toggle:checked + .toggle-track {
+    background: #2f6e35;
+  }
+  #hint-toggle:checked + .toggle-track::before {
+    transform: translateX(22px);
+    background: radial-gradient(circle at 40% 35%, #d9ffd0, var(--glow) 45%, #3fbf3a 100%);
+    box-shadow: 0 0 8px 2px rgba(93,226,138,0.8);
+  }
+</style>
+</head>
+<body>
+
+<div class="sky" id="sky"></div>
+
+<header>
+  <h1>Leuchtkäfer-Versteck</h1>
+  <p>Der Leuchtkäfer versteckt sich – tipp die Verstecke durch und finde ihn!</p>
+  <div class="score">⭐ <span id="score">0</span></div>
+</header>
+
+<main>
+  <div id="grid"></div>
+</main>
+
+<button id="gear-btn" aria-label="Einstellungen">⚙️</button>
+<div id="panel">
+  <h2>Versteck-Einstellungen</h2>
+  <div class="row">
+    <label>Anzahl Verstecke</label>
+    <div class="stepper">
+      <button data-dir="-1">–</button>
+      <span id="countVal">6</span>
+      <button data-dir="1">+</button>
+    </div>
+  </div>
+  <div class="row">
+    <label>Hinweis-Leuchten</label>
+    <span class="toggle-switch">
+      <input type="checkbox" id="hint-toggle" checked>
+      <label class="toggle-track" for="hint-toggle"></label>
+    </span>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  const grid = document.getElementById('grid');
+  const gearBtn = document.getElementById('gear-btn');
+  const panel = document.getElementById('panel');
+  const countVal = document.getElementById('countVal');
+  const scoreEl = document.getElementById('score');
+  const sky = document.getElementById('sky');
+  const hintToggle = document.getElementById('hint-toggle');
+
+  let count = 6, score = 0, secretIndex = -1, roundLocked = false;
+  const MIN = 3, MAX = 12;
+  let hintEnabled = hintToggle.checked;
+
+  const spotEmojis = ['🌿','🍃','🍄','🌻','🪨','🎋','🌵','🪵','🍂','🌾'];
+
+  // decorative twinkling background stars
+  for (let i = 0; i < 40; i++) {
+    const s = document.createElement('span');
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 100 + '%';
+    s.style.animationDelay = (Math.random() * 3) + 's';
+    sky.appendChild(s);
+  }
+
+  function randomSpotEmoji(){
+    return spotEmojis[Math.floor(Math.random() * spotEmojis.length)];
+  }
+
+  function buildGrid(){
+    grid.innerHTML = '';
+    roundLocked = false;
+    secretIndex = Math.floor(Math.random() * count);
+
+    for (let i = 0; i < count; i++){
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.index = i;
+
+      const firefly = document.createElement('div');
+      firefly.className = 'firefly-hidden';
+      firefly.textContent = '🐝';
+
+      const spot = document.createElement('div');
+      spot.className = 'spot';
+      spot.textContent = randomSpotEmoji();
+
+      cell.appendChild(firefly);
+      cell.appendChild(spot);
+
+      if (i === secretIndex && hintEnabled) cell.classList.add('hint');
+
+      cell.addEventListener('click', onCellClick);
+      grid.appendChild(cell);
+    }
+  }
+
+  function onCellClick(e){
+    if (roundLocked) return;
+    const cell = e.currentTarget;
+    const idx = Number(cell.dataset.index);
+
+    if (idx !== secretIndex){
+      cell.classList.remove('wrong');
+      void cell.offsetWidth; // reflow, damit Animation neu startet
+      cell.classList.add('wrong');
+      setTimeout(() => cell.classList.remove('wrong'), 400);
+      return;
+    }
+
+    roundLocked = true;
+    score++;
+    scoreEl.textContent = score;
+    cell.classList.add('found');
+    cell.classList.remove('hint');
+
+    const burst = document.createElement('div');
+    burst.className = 'burst';
+    burst.textContent = ['✨','🌟','🎉','💫'][Math.floor(Math.random() * 4)];
+    cell.appendChild(burst);
+    setTimeout(() => burst.remove(), 550);
+
+    setTimeout(buildGrid, 1000);
+  }
+
+  gearBtn.addEventListener('click', () => panel.classList.toggle('open'));
+
+  document.addEventListener('click', (e) => {
+    if (!panel.contains(e.target) && e.target !== gearBtn && panel.classList.contains('open')){
+      panel.classList.remove('open');
+    }
+  });
+
+  document.querySelectorAll('.stepper button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const dir = Number(btn.dataset.dir);
+      count = Math.min(MAX, Math.max(MIN, count + dir));
+      countVal.textContent = count;
+      buildGrid();
+    });
+  });
+
+  hintToggle.addEventListener('change', () => {
+    hintEnabled = hintToggle.checked;
+    buildGrid();
+  });
+
+  countVal.textContent = count;
+  buildGrid();
+})();
+</script>
+
+</body>
+</html>
