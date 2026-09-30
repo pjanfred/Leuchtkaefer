@@ -228,11 +228,12 @@
   #panel.open { transform: scale(1); opacity: 1; }
 
   .legal-links{
-    display:flex; justify-content:center; gap:8px;
+    display:none; justify-content:center; gap:8px;
     margin-top:12px; padding-top:10px;
     border-top:1px solid rgba(255,255,255,0.14);
     font-size:12px; color:#B9C3E0;
   }
+  .legal-links.show{ display:flex; }
   .legal-links a{ color:#A9F5C4; text-decoration:underline; }
 
   #panel h2 {
@@ -422,6 +423,13 @@
   updateDisplays();
   buildGrid();
 })();
+</script>
+
+<script>
+// Impressum/Datenschutz nur im Kontext von jan-it.de anzeigen (nicht offline, nicht auf Forks/fremdem Hosting)
+if (/(^|\.)jan-it\.de$/i.test(location.hostname)) {
+  document.querySelectorAll('.legal-links').forEach(function(n){ n.classList.add('show'); });
+}
 </script>
 
 </body>
