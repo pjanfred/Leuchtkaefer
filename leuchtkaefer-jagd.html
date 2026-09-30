@@ -223,6 +223,14 @@
   }
   #settings-panel.open{ display:flex; }
 
+  .legal-links{
+    display:flex; justify-content:center; gap:8px;
+    margin-top:12px; padding-top:10px;
+    border-top:1px solid rgba(255,255,255,0.14);
+    font-size:12px; color:#B9C3E0;
+  }
+  .legal-links a{ color:#A9F5C4; text-decoration:underline; }
+
   #settings-panel .panel-title{
     color:var(--text-light);
     font-size:1.15rem;
@@ -393,6 +401,11 @@
       </span>
     </div>
     <button id="close-panel">Schließen</button>
+    <nav class="legal-links" aria-label="Rechtliches">
+      <a href="https://jan-it.de/impressum/" target="_blank" rel="noopener">Impressum</a>
+      <span aria-hidden="true">·</span>
+      <a href="https://jan-it.de/datenschutzerklaerung/" target="_blank" rel="noopener">Datenschutz</a>
+    </nav>
   </div>
 </div>
 

@@ -41,6 +41,15 @@ Wenn dir die Spiele gefallen und du das Projekt unterstützen möchtest:
 
 [![Buy Me A Coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://buymeacoffee.com/pjanfred)
 
+## ⚖️ Impressum & Datenschutz
+
+Die Spiele werden im Zusammenhang mit der Webseite [jan-it.de](https://jan-it.de) betrieben. Anbieterkennzeichnung und Datenschutzhinweise befinden sich dort:
+
+- [Impressum](https://jan-it.de/impressum/)
+- [Datenschutzerklärung](https://jan-it.de/datenschutzerklaerung/)
+
+Auf der Übersichtsseite ([`index.html`](./index.html)) sind beide Links im Footer verlinkt, in den einzelnen Spielen im Einstellungs-Menü (⚙️) – bewusst dort, damit Kinder beim Spielen nicht versehentlich auf externe Seiten tippen.
+
 ## 📄 Lizenz
 
 Der Code steht unter der [MIT-Lizenz](./LICENSE) – frei nutzbar, veränderbar und weiterverwendbar.
